@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+  zookeeper_service:
+    image: "bitnami/zookeeper:latest"
+    container_name: zookeeper_service
+    ports:
+      - "2181:2181"
+    volumes:
+      - "zookeeper_data:/bitnami"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka_service:
+    image: "bitnami/kafka:latest"
+    container_name: kafka_service
+    ports:
+      - "9092:9092"
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_ENABLE_KRAFT=no
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper_service:2181
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka_service:9092
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+    depends_on:
+      - zookeeper_service
+  mongo_services:
+    image: mongo
+    container_name: mongodb_services
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo_services:/data/db
+  warehouse_system:
+    container_name: warehouse_system
+    build: ./WMS-OFFICIAL
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./WMS-OFFICIAL:/WMS-OFFICIAL
+    environment:
+      - PORT=3000
+      - MONGODB_URI=mongodb+srv://WMS:123@wms.2m5rxyp.mongodb.net/WMS?retryWrites=true&w=majority
+      - KAFKA_BOOTSTRAP_SERVERS=kafka_service:9092
+    depends_on:
+      - mongo_services
+      - kafka_service
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local

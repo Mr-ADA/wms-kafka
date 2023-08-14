@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sidebars/">
+    <link href="/sidebars.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Raleway';
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        th:nth-child(8),
+        td:nth-child(8) {
+            max-width: 200px;
+            /* Adjust the width value as needed */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        td.description-cell {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            /* Adjust the width value as needed */
+        }
+
+        td.description-cell:hover {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: initial;
+            max-width: initial;
+        }
+
+        .tab-content {
+            background-color: #eeeeee;
+            width: 100%;
+            height: auto;
+            padding: 30px;
+            overflow: auto;
+        }
+
+        .tab-sub-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .active {
+            background-color: #666;
+            color: white;
+        }
+
+        .graphBorder {
+            border-style: solid;
+            padding: 10px;
+            border-radius: 20px;
+            border-color: #9BABB8;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $('.nav-pills li:first').addClass('aria-pressed="true"');
+            $('.tab-content:not(:first)').hide();
+
+            $('.nav-pills li a').click(function (event) {
+                event.preventDefault();
+                var content = $(this).attr('href');
+                $('.nav-pills li').removeClass('active');
+                $(this).parent().addClass('active');
+                $('.tab-content').hide();
+                $(content).show();
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <main class="d-flex flex-nowrap">
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark"
+            style="width: 280px;  border-top-right-radius: 10px; border-bottom-right-radius: 10px;">
+            <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <svg class="bi pe-none me-2" width="40" height="32">
+                    <use xlink:href="#bootstrap" />
+                </svg>
+                <img src="/images/logo.png" alt="logo" width="80%" height="80%">
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li><a href="#dashboard" class="nav-link text-white">Dashboard</a></li>
+                <li><a href="#inventory" class="nav-link  text-white">Inventory</a></li>
+                <li><a href="#orders" class="nav-link text-white">Orders</a></li>
+                <li><a href="#shipments" class="nav-link text-white">Shipments</a></li>
+                <li><a href="#warehouse" class="nav-link text-white">Warehouse Structure</a></li>
+                <li><a href="#report" class="nav-link text-white">Reports and Analytics</a></li>
+            </ul>
+            <hr>
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://e7.pngegg.com/pngimages/178/595/png-clipart-user-profile-computer-icons-login-user-avatars-monochrome-black.png "
+                        alt="" width="32" height="32" class="rounded-circle me-2">
+                    <strong>User</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a id="logoutLink" class="dropdown-item" href="#">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="dashboard" class="tab-content">
+            <h2 style="font-weight:bold;">Warehouse Overview</h2>
+            <div class="container tab-sub-content">
+                <div class="row">
+                    <div class="col" style="width: 50%;">
+                        <div class="mb-1">
+                            <canvas class="graphBorder" id="myDoughnutChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col" style="width: 50%;">
+                        <div class="mb-1">
+                            <canvas class="graphBorder" id="myLineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col" style="width: 50%;">
+                        <div class="mb-1">
+                            <canvas class="graphBorder" id="myBarChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col" style="width: 50%;">
+                        <div class="mb-1">
+                            <canvas class="graphBorder" id="myPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div id="inventory" class="tab-content">
+            <h2 style="font-weight:bold;">Create New Inventory Product Record</h2>
+            <div class="container tab-sub-content">
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-1">
+                            <label for="productName" class="form-label">Product Name:</label>
+                            <input type="text" class="form-control" id="productName">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="mb-1">
+                            <label for="sku" class="form-label">SKU:</label>
+                            <input type="text" class="form-control" id="sku">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="mb-1">
+                            <label for="quantity" class="form-label">Quantity:</label>
+                            <input type="text" class="form-control" id="quantity">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-1">
+                            <label for="storageLocation1" class="form-label">Storage Location:</label>
+                            <div class="container" style="padding: 0px;">
+                                <div class="row">
+                                    <div class="col">
+                                        <select class="form-select" id="storageLocation1">
+                                            <option selected="">Select Ailse</option>
+                                            <option value="Ailse 1">Ailse 1</option>
+                                            <option value="Ailse 2">Ailse 2</option>
+                                            <option value="Ailse 3">Ailse 3</option>
+                                            <option value="Ailse 4">Ailse 4</option>
+                                            <option value="Ailse 5">Ailse 5</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <select class="form-select" id="storageLocation2">
+                                            <option selected="">Select Shelf</option>
+                                            <option value="Shelf A">Shelf A</option>
+                                            <option value="Shelf B">Shelf B</option>
+                                            <option value="Shelf C">Shelf C</option>
+                                            <option value="Shelf D">Shelf D</option>
+                                            <option value="Shelf E">Shelf E</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="mb-1">
+                            <label for="category" class="form-label">Category:</label>
+                            <select class="form-select" id="category">
+                                <option selected="">Select Option</option>
+                                <option value="Power Tools">Power Tools</option>
+                                <option value="Hand Tools">Hand Tools</option>
+                                <option value="Measurement Instruments">Measurement Instruments</option>
+                                <option value="Welding Equipment">Welding Equipment</option>
+                                <option value="Cutting Tools">Cutting Tools</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="mb-1">
+                            <label for="reorderPoint" class="form-label">Reorder Point:</label>
+                            <input type="text" class="form-control" id="reorderPoint">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-1">
+                        <label for="productDescription" class="form-label">Product Description:</label>
+                        <textarea class="form-control" id="productDescription" rows="3"></textarea>
+                    </div>
+                </div>
+                <button type="button" id="submitButton" class="btn btn-primary mt-3">Submit</button>
+            </div>
+            <h2 class="mt-3" style="font-weight:bold;">Inventory Product List</h2>
+            <div class="container tab-sub-content">
+                <div class="bd-example m-0 border-0">
+                    <table id="inventoryTable" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product ID</th>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">SKU</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Storage Location</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Reorder Point</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="orders" class="tab-content">
+            <h2 style="font-weight:bold;">Orders Management</h2>
+            <div class="container tab-sub-content">
+                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="btn-group" role="group" aria-label="First group">
+                        <button id="allBtn" type="button" class="btn btn-outline-secondary">All Orders</button>
+                        <button id="processBtn" class="btn btn-outline-secondary">Proccessing</button>
+                        <button id="shippedBtn" class="btn btn-outline-secondary">Shipped</button>
+                        <button id="deliveredBtn" class="btn btn-outline-secondary">Delivered</button>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-text" id="btnGroupAddon2">ID</div>
+                        <input id="orderSearch" type="text" class="form-control" placeholder="Search By ID"
+                            aria-label="Input group example" aria-describedby="btnGroupAddon2">
+                    </div>
+                </div>
+                <div class="bd-example m-0 border-0 mt-3">
+                    <table id="orderTable" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">Customer Name</th>
+                                <th scope="col">Customer Address</th>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Order Date</th>
+                                <th scope="col">Order Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="shipments" class="tab-content">
+
+        </div>
+        <div id="warehouse" class="tab-content">
+
+        </div>
+        <div id="report" class="tab-content">
+
+        </div>
+    </main>
+    <script src="/charts.js"></script>
+    <script src="/inventoryTables.js"></script>
+    <script src="/ordersTables.js"></script>
+    <script src="/sidebars.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
+        integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS"
+        crossorigin="anonymous"></script>
+</body>
+</html>
