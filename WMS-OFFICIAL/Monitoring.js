@@ -5,31 +5,10 @@ const path = require("path");
 const router = express.Router();
 const mongoose = require("mongoose");
 const axios = require("axios");
-// const http = require("http");
-// const server = http.createServer(router);
-// const { Server } = require("socket.io");
-
-// //io configuration
-// // const io = new Server(server);
-// const io = new Server(server, {
-//   cors: {
-//     origin: "*",
-//   },
-// });
 
 router.io = require("socket.io")();
 
 //=========================== MONITORING FUNCTIONALITY =========================================
-
-/*
-  Monitoring Metrics
-  •	Request Number - The number of requests the service is handling per second.
-  •	Processing Time - The amount of time each request
-        Processing Time = Time of Request Received – Time of Request Sent
-  • Response Duration - The amount of time the system respond to a request 
-  • Availability - Available, if the microservices respond to the request
-                - Unavailable, if the microservices does not respond to the request
-*/
 
 router.use(express.static(path.join(__dirname, "public")));
 router.use(express.static(path.join(__dirname, "html")));
@@ -187,10 +166,8 @@ async function checkMicroservicesHealth(microserviceUrls) {
 
 async function receiveMessage() {
   //============================= CONSUMER ADMIN SERVICE CONFIGURATION =====================================
-  //TO BE IMPLEMENTED: create 2 parameters (consumerGroup, messageTopic)
 
   const topicExists = true;
-  // const topicExists = topicAvailability("login-message");
   try {
     if (topicExists) {
       consumer.run({
@@ -216,7 +193,6 @@ async function receiveMessage() {
 }
 
 async function saveMessage() {
-  //TO BE IMPLEMENTED: create 1 parameters (serviceName)
   for (const message of incoming_messages) {
     //iterate through each message and keep the metadata
     //retrieve company_registration from message from FE
@@ -273,14 +249,6 @@ async function checkDocumentAvailability(value) {
   }
 }
 
-/*
-  request = {
-    company_identifier: 123
-    service_name: Account
-    session: s_123
-    timestamp
-  }
-*/
 //aggregate result of the MongoDB document
 async function processMonitoring(registrationId) {
   try {
@@ -381,158 +349,3 @@ router.get("/monitoring-chart/:registrationId", async (req, res) => {
   }
 });
 module.exports = router;
-
-// router.io.on("error", (error) => {
-//   console.log(error);
-// });
-// router.io.of("http://localhost:3000/monitoring-socket").on("connection", (socket) => {
-//   console.log("A user connected");
-
-//   // Listen for events from clients
-//   socket.on("request_monitoring", async (companyRegistrationNo) => {
-//     // Simulate sending the monitoring result back to the client
-//     console.log("Received Registration No", companyRegistrationNo);
-//     try {
-//       var service_availability = await checkMicroservicesHealth(microserviceUrls);
-//       var monitoring_result = await processMonitoring(companyRegistrationNo);
-//       monitoring_result.forEach((message) => {
-//         try {
-//           message.latest_request_status = service_availability[message._id];
-//           console.log("==================== PROCESS MONITORING ===============================");
-//           console.log(message);
-//         } catch (err) {
-//           console.log(err);
-//         }
-//       });
-//       socket.emit("incoming_result", monitoring_result);
-//       socket.broadcast.emit("incoming_result", monitoring_result);
-//     } catch (err) {
-//       console.log("Error:", err);
-//     }
-//   });
-
-//   // Handle disconnections
-//   socket.on("disconnect", () => {
-//     console.log("User disconnected");
-//   });
-// });
-
-// router.get("/monitoring-result", () => {
-//   //========================== SETUP WEBSOCKET (socket.io) FOR REAL-TIME DISPLAY =================================
-//   receiveMessage();
-//   check_availability();
-//   console.log("File path:", __filename);
-//   io.on("connection", (socket) => {
-//     console.log("A user connected");
-
-//     // Listen for events from clients
-//     socket.on("request_monitoring", async (companyRegistrationNo) => {
-//       // Simulate sending the monitoring result back to the client
-//       console.log("Received Registration No", companyRegistrationNo);
-//       try {
-//         var service_availability = await checkMicroservicesHealth(microserviceUrls);
-//         var monitoring_result = await processMonitoring(companyRegistrationNo);
-//         monitoring_result.forEach((message) => {
-//           try {
-//             message.latest_request_status = service_availability[message._id];
-//             console.log("==================== PROCESS MONITORING ===============================");
-//             console.log(message);
-//           } catch (err) {
-//             console.log(err);
-//           }
-//         });
-//         socket.emit("incoming_result", monitoring_result);
-//       } catch (err) {
-//         console.log("Error:", error);
-//       }
-//     });
-
-//     // Handle disconnections
-//     socket.on("disconnect", () => {
-//       console.log("User disconnected");
-//     });
-//   });
-//   console.log("===================== THIS IS MONITORING.JS =======================");
-// });
-
-// setInterval(async () => {
-//   var service_availability = await checkMicroservicesHealth(microserviceUrls);
-//   var monitoring_result = processMonitoring();
-//   monitoring_result.then((messages) => {
-//     messages.forEach((message) => {
-//       try {
-//         message.latest_request_status = service_availability[message._id];
-//         // socket.emit("emitMessage", message);
-//       } catch (err) {
-//         console.log(err);
-//       }
-//     });
-//   });
-// }, 1000);
-/*
-io.on("connection", (socket) => {
-
-// make sure to write codes inside the io.on("connection") block in order to maintain the connection
-// to be established
-
-console.log("=============== ON CONNECTION ===========================");
-receiveMessage();
-setInterval(async () => {
-  var service_availability = await checkMicroservicesHealth(microserviceUrls);
-  var monitoring_result = processMonitoring();
-  monitoring_result.then((messages) => {
-    messages.forEach((message) => {
-      try {
-        message.latest_request_status = service_availability[message._id];
-        socket.emit("emitMessage", message);
-      } catch (err) {
-        console.log(err);
-      }
-    });
-  });
-}, 1000);
-});
-
-
-setInterval(async () => {
-var service_availability = await checkMicroservicesHealth(microserviceUrls);
-var monitoring_result = processMonitoring();
-monitoring_result.then((messages) => {
-  messages.forEach((message) => {
-    try {
-      message.latest_request_status = service_availability[message._id];
-      // socket.emit("emitMessage", message);
-    } catch (err) {
-      console.log(err);
-    }
-  });
-});
-}, 1000);
-*/
-
-// fetch(`${serviceUrl}`, {
-//   method: "GET",
-// })
-//   .then((response) => response.json())
-//   .then((data) => {
-//     if (data.status === 2000) {
-//       console.log(`${serviceName} is available.`);
-//       serviceAvailability[serviceName] = true;
-//     } else {
-//       console.log(`${serviceName} is unaavilable.`);
-//       serviceAvailability[serviceName] = false;
-//     }
-//   })
-//   .catch((error) => {
-//     // console.error("Error:", error);
-//   });
-
-//     setInterval(() => {
-//       io.emit("incoming_result", monitoring_result);
-//     }, 1000);
-//     console.log("==================== RESULT EMITTED ===============================");
-//     res.json(monitoring_result);
-//   } catch (err) {
-//     console.error(error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }

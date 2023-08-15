@@ -105,25 +105,3 @@ function getRealTimeMessage() {
   });
 }
 getRealTimeMessage();
-
-// function getMessage() {
-//   console.log("=============== GET MESSAGE ===========================");
-//   const socket = io();
-
-//   socket.on("connect", () => {
-//     console.log("connected");
-//   });
-
-//   socket.on("emitMessage", (message) => {
-//     console.log("====================== EMIT MESSAGE HTML ===========================");
-//     var serviceNameCell = document.getElementById("admin-table-service");
-//     var numRequestCell = document.getElementById("admin-table-num-request");
-//     var avgTimeCell = document.getElementById("admin-table-avg-time");
-//     var availabilityCell = document.getElementById("admin-table-availability");
-//     serviceNameCell.innerHTML = message._id;
-//     numRequestCell.innerHTML = message.total_request;
-//     avgTimeCell.innerHTML = message.avgDuration;
-//     console.log("service availability" + message.latest_request_status);
-//     availabilityCell.innerHTML = message.latest_request_status ? "Available" : "Unavailable";
-//   });
-// }
