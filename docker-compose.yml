@@ -1,5 +1,14 @@
 version: "3.8"
 services:
+  nginx_proxy:
+    image: nginx
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - warehouse_system
   zookeeper_service:
     image: "bitnami/zookeeper:latest"
     container_name: zookeeper_service
@@ -23,17 +32,9 @@ services:
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka_service:9092
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-    depends_on:
-      - zookeeper_service
-  mongo_services:
-    image: mongo
-    container_name: mongodb_services
-    ports:
-      - "27017:27017"
-    volumes:
-      - ./mongo_services:/data/db
   warehouse_system:
     container_name: warehouse_system
+    image: mrada/wms-kafka:latest
     build: ./WMS-OFFICIAL
     ports:
       - "3000:3000"
@@ -43,9 +44,6 @@ services:
       - PORT=3000
       - MONGODB_URI=mongodb+srv://WMS:123@wms.2m5rxyp.mongodb.net/WMS?retryWrites=true&w=majority
       - KAFKA_BOOTSTRAP_SERVERS=kafka_service:9092
-    depends_on:
-      - mongo_services
-      - kafka_service
 volumes:
   zookeeper_data:
     driver: local
