@@ -9,6 +9,7 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - warehouse_system
+
   zookeeper_service:
     image: "bitnami/zookeeper:latest"
     container_name: zookeeper_service
@@ -17,7 +18,8 @@ services:
     volumes:
       - "zookeeper_data:/bitnami"
     environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+
   kafka_service:
     image: "bitnami/kafka:latest"
     container_name: kafka_service
@@ -26,12 +28,12 @@ services:
     volumes:
       - "kafka_data:/bitnami"
     environment:
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_ENABLE_KRAFT=no
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper_service:2181
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka_service:9092
-      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_ENABLE_KRAFT: "no"
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper_service:2181
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka_service:9092
+
   warehouse_system:
     container_name: warehouse_system
     image: mrada/wms-kafka:latest
@@ -41,9 +43,10 @@ services:
     volumes:
       - ./WMS-OFFICIAL:/WMS-OFFICIAL
     environment:
-      - PORT=3000
-      - MONGODB_URI=mongodb+srv://WMS:123@wms.2m5rxyp.mongodb.net/WMS?retryWrites=true&w=majority
-      - KAFKA_BOOTSTRAP_SERVERS=kafka_service:9092
+      PORT: "3000"
+      MONGODB_URI: "mongodb+srv://WMS:123@wms.2m5rxyp.mongodb.net/WMS?retryWrites=true&w=majority"
+      KAFKA_BOOTSTRAP_SERVERS: kafka_service:9092
+
 volumes:
   zookeeper_data:
     driver: local
