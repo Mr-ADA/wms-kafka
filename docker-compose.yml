@@ -6,10 +6,10 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/default.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - warehouse_system
-
+    restart: always
   zookeeper_service:
     image: "bitnami/zookeeper:latest"
     container_name: zookeeper_service
@@ -19,7 +19,7 @@ services:
       - "zookeeper_data:/bitnami"
     environment:
       ALLOW_ANONYMOUS_LOGIN: "yes"
-
+    restart: on-failure
   kafka_service:
     image: "bitnami/kafka:latest"
     container_name: kafka_service
@@ -33,11 +33,13 @@ services:
       KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper_service:2181
       KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
       KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka_service:9092
-
+    restart: on-failure
   warehouse_system:
     container_name: warehouse_system
-    image: mrada/wms-kafka:latest
-    build: ./WMS-OFFICIAL
+    image: "mrada/wms-kafka:latest"
+    build:
+      context: ./WMS-OFFICIAL
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     volumes:
