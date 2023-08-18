@@ -10,6 +10,9 @@ services:
     depends_on:
       - warehouse_system
     restart: always
+    networks:
+      - app_network
+
   zookeeper_service:
     image: "bitnami/zookeeper:latest"
     container_name: zookeeper_service
@@ -20,6 +23,9 @@ services:
     environment:
       ALLOW_ANONYMOUS_LOGIN: "yes"
     restart: on-failure
+    networks:
+      - app_network
+
   kafka_service:
     image: "bitnami/kafka:latest"
     container_name: kafka_service
@@ -34,12 +40,13 @@ services:
       KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
       KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka_service:9092
     restart: on-failure
+    networks:
+      - app_network
+
   warehouse_system:
     container_name: warehouse_system
     image: "mrada/wms-kafka:latest"
-    build:
-      context: ./WMS-OFFICIAL
-      dockerfile: Dockerfile
+    build: ./WMS-OFFICIAL # Update the path to the Dockerfile
     ports:
       - "3000:3000"
     volumes:
@@ -49,8 +56,15 @@ services:
       MONGODB_URI: "mongodb+srv://WMS:123@wms.2m5rxyp.mongodb.net/WMS?retryWrites=true&w=majority"
       KAFKA_BOOTSTRAP_SERVERS: kafka_service:9092
     restart: on-failure
+    networks:
+      - app_network
+
 volumes:
   zookeeper_data:
     driver: local
   kafka_data:
     driver: local
+
+networks:
+  app_network:
+    driver: bridge
